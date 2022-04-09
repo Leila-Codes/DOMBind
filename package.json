@@ -1,5 +1,5 @@
 {
-  "name": "Binder",
+  "name": "Bindy",
   "version": "0.1.0",
   "description": "A simple, lightweight web framework. Yes another framework. I'm tired of how bloated the popular ones are. Angular, React and Vue.",
   "directories": {
@@ -16,7 +16,7 @@
     "Frontend"
   ],
   "author": "Lunasphere Entertainment",
-  "license": "ISC",
+  "license": "GNUv3",
   "devDependencies": {
     "ts-loader": "^9.2.8",
     "typescript": "^4.6.3",
