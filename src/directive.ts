@@ -123,6 +123,17 @@ class InputModelDirective implements Directive {
     }
 }
 
+export class ClickableDirective implements Directive {
+    selector = "[bind-click]"
+    attr = "bind-click"
+
+    render(ctrl: ControllerInstance, target: HTMLElement, data?: any) {
+        target.onclick = function(e) {
+
+        }
+    }
+}
+
 export const DIRECTIVES: Directive[] = [
     new StrBindDirective(),
     new ForLoopDirective(),
