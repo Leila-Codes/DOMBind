@@ -7,7 +7,7 @@ export interface Directive {
     render(ctrl: ControllerInstance, target: HTMLElement, dataOverride?: any): string | void
 }
 
-function evaluate(expression: string, data: any): any {
+/*function evaluate(expression: string, data: any): any {
     const parts = expression.split(".");
     // let value: any = data || this.scope;
     let value: any = data;
@@ -33,7 +33,7 @@ function update(expression: string, data: any, val: any) {
     // }
     //
     // value[parts[parts.length - 1]] = val;
-}
+}*/
 
 class StrBindDirective implements Directive {
     selector = "[bind-str]"
@@ -42,10 +42,7 @@ class StrBindDirective implements Directive {
     render(ctrl: ControllerInstance, target: HTMLElement, data?: any) {
         const attr = target.getAttribute(this.attr);
 
-        if (attr) {
-            target.textContent = ctrl.get(attr, data);
-            return attr;
-        }
+        target.textContent = ctrl.get(attr || '', data);
     }
 
     // render(data: any, target: HTMLElement) {

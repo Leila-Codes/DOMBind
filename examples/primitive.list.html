@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Hello, World App</title>
+</head>
+
+<body>
+    <div bind-controller="app">
+        <p>Hello <span bind-str="name"></span></p>
+        <ul>
+            <li bind-for="numbers">
+                <span bind-str></span>
+            </li>
+        </ul>
+    </div>
+</body>
+<script type="text/javascript" src="../dist/bundle.js"></script>
+<script type="text/javascript">
+    const app = new bindy.Controller(
+        'HelloWorldApp',
+        {
+            name: "Leila-codes",
+            numbers: [5, 9, 11, 2, 51, 2]
+        }
+    )
+</script>
+
+</html>

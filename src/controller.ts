@@ -44,7 +44,10 @@ export class ControllerInstance extends Controller {
             target = this.data;
 
         try {
-            return eval(`target.${expression}`);
+            if (expression)
+                return eval(`target.${expression}`);
+            else
+                return target;
         } catch (ex) {
             this.logger.log(Level.ERROR, "failed to fetch property", expression, "from", target);
         }
