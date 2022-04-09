@@ -30,7 +30,7 @@ export class ControllerInstance extends Controller {
 
         let ctrl = this;
 
-        this.logger = new Logger(`Bindy-Controller-${this.name}`, Level.INFO);
+        this.logger = new Logger(`Bindy-Controller-${this.name}`, Level.ERROR);
 
         if (name)
             this.name = name

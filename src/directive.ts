@@ -43,6 +43,8 @@ class StrBindDirective implements Directive {
         const attr = target.getAttribute(this.attr);
 
         target.textContent = ctrl.get(attr || '', data);
+        if (attr)
+            return attr
     }
 
     // render(data: any, target: HTMLElement) {
