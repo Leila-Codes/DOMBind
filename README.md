@@ -1,12 +1,12 @@
 # DomBINDy
 
 Welcome to DOMBindy. A new web framework written in typescript.
-Syntax is heavily inspired by AngularJS however this framework is designed to be as minimal as possible. Just one single JS file and you'r ready to start using the framework right away.
+Syntax is heavily inspired by AngularJS however this framework is designed to be as minimal as possible. Just one single JS file and you're ready to start using the templating tools right away.
 
 This plugin is currently still in development and highly experimental. The project itself is intended for educational use only.
 You're welcome to check it out, or add to it as you please, but you are probably better off using one of the big names (Angular, React, VueJS +) for your **production** environments!
 
-## Directives
+## Available Directives
 A list of directives and examples are provided below to get you started.
 
 ### String Bind
