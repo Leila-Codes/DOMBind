@@ -29,7 +29,7 @@ Simple string binding a variable to your HTML tag. Any changes made to the varia
 ```
 
 ### For-loop Bind
-Similar to the classic `ng-repeat` this one iterates over a bound array and repeats the targetted element for each array.
+Similar to the classic `ng-repeat` this one iterates over a bound array and repeats the targeted element for each item.
 
 ```html
 <body bind-app="appData">
@@ -78,7 +78,7 @@ Note: Named variables within the scope are automatically bound to the function a
 ```
 
 ### Input Modeling Bind
-Similar to `ng-model` this one is a bi-directional binding for input elements. Any text inputted is automatically set back to the variable.
+Similar to `ng-model` this one is a bidirectional binding for input elements. Any text inputted is automatically set back to the variable.
 
 ```html
 <body bind-app="appData">
