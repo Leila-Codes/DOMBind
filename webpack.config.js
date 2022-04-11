@@ -1,7 +1,7 @@
 const { resolve } = require('path');
 
 module.exports = {
-    entry: './src/index.ts',
+    entry: './src/application.ts',
     module: {
         rules: [
             {

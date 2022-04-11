@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hello World Test</title>
+</head>
+<body bind-app="data">
+<h1>Hello <span bind-str="name"></span></h1>
+
+<ul>
+    <li bind-for="apps">
+        <span bind-str="name"></span>
+    </li>
+</ul>
+
+<div>
+    <ol>
+        <li bind-for="nested">
+            <span bind-str="name"></span>
+            <ul>
+                <li bind-for="files">
+                    <span bind-str="content"></span>
+                </li>
+            </ul>
+        </li>
+    </ol>
+</div>
+</body>
+<script src="../dist/bundle.js"></script>
+<script type="text/javascript">
+    const data = {
+        name: "Leila-codes",
+        apps: [
+            {name: "Test App #1", version: "1.0.0"},
+            {name: "Test App #2", version: "1.1.0"},
+            {name: "Test App #3", version: "0.3.2"},
+        ],
+        nested: [
+            {
+                name: "Test Computer",
+                files: [
+                    {name: "test.txt", content: "file#01219339184"}
+                ]
+            }
+        ]
+    }
+</script>
+</html>

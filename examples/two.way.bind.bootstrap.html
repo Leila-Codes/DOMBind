@@ -7,10 +7,13 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
 </head>
-<body bind-controller="testCtrl">
+<body bind-app="appData">
+
+<div class="container-fluid">
+
 <h1>Hello, <span bind-str="name"></span>!</h1>
 
-<div class="card" bind-for="apps">
+<div class="card my-2" bind-for="apps">
     <div class="card-header" bind-str="name"></div>
     <div class="card-body" >
         A quick test body card.
@@ -41,33 +44,36 @@
             </div>
             <input class="form-control" bind-model="formData.lastname">
         </div>
-    </div>
-    <div class="card-actions">
+
         <p>So your name is:
             <span bind-str="formData.firstname"></span>
             <span bind-str="formData.lastname"></span>
         </p>
     </div>
+    <div class="card-footer">
+        <button class="float-right btn btn-primary" bind-click="clicked(22, formData.firstname, formData.lastname)">Submit</button>
+    </div>
+</div>
+
 </div>
 
 </body>
 <script src="../dist/bundle.js"></script>
 <script type="text/javascript">
-    const testCtrl = new bindy.Controller(
-        'TestControl1',
-        {
-            name: "Test Control #1",
-            formData: {
-                firstname: '',
-                lastname: '',
-            },
-            apps: [
-                {name: "DefaultApp#1", content: "I am App number 1"},
-                {name: "DefaultApp#2", content: "I am app number 2"},
-                {name: "DefaultApp#3", content: "I am not the app you are looking for."},
-            ]
+    const appData = {
+        name: "Test Control #1",
+        formData: {
+            firstname: '',
+            lastname: '',
+        },
+        apps: [
+            {name: "DefaultApp#1", content: "I am App number 1"},
+            {name: "DefaultApp#2", content: "I am app number 2"},
+            {name: "DefaultApp#3", content: "I am not the app you are looking for."},
+        ],
+        clicked: (e, age, firstName, lastName) => {
+            alert(`Hello there ${firstName} ${lastName}! You are ${age} year(s) old!`);
         }
-    )
-
+    }
 </script>
 </html>

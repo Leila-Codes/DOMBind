@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Click Example</title>
+</head>
+<body bind-controller="app">
+    <h1>Hello, <span bind-str="name"></span>!</h1>
+
+    <div bind-for="items">
+        <p><span bind-str="name"></span> <button bind-click="clicked(name)">Select</button></p>
+    </div>
+
+    <button bind-click="update(visible, !visible)">Toggle Visibility</button>
+
+    <div bind-if="visible">
+        This is a conditional section.
+    </div>
+</body>
+<script src="../dist/bundle.js"></script>
+<script type="text/javascript">
+    const app = new bindy.Controller(
+        'ClickExampleApp',
+        {
+            name: 'Click example',
+            clicked: (e, name) => {
+                alert(name + " Selected!");
+            },
+            items: [{name: "item 1"}, {name: "item 2"}],
+            // visible: true,
+            // toggle: () => {
+            //
+            // }
+        }
+    )
+</script>
+</html>
