@@ -1,10 +1,10 @@
-import {NewController} from "../controller";
+import {Controller} from "../controller";
 
 export abstract class Directive {
     readonly selector: string = "bind-attr";
 
     protected attr: string
-    protected expression: string = ""
+    public expression: string = ""
 
     protected target!: HTMLElement;
     protected template!: HTMLElement;
@@ -32,7 +32,11 @@ export abstract class Directive {
         }
     }
 
-    render(ctrl: NewController, dataOverride?: any): string | void {
+    bindings() : string[] {
+        return [this.expression];
+    }
+
+    render(ctrl: Controller, dataOverride?: any): void {
         // Do nothing.
     }
 }
@@ -43,11 +47,30 @@ export class StrBindDirective extends Directive {
         super("[bind-str]", target);
     }
 
-    render(ctrl: NewController, data?: any) {
+    render(ctrl: Controller, dataOverride?: any) {
         // const attr = target.getAttribute(this.attr);
 
-        this.target.textContent = ctrl.get(this.expression, data);
-        if (this.expression)
-            return this.expression
+        this.target.textContent = ctrl.resolve(this.expression, dataOverride);
+    }
+}
+
+export class VisibilityDirective extends Directive {
+    private readonly prevDisplay?: string;
+
+    constructor(target?: HTMLElement) {
+        super("[bind-if]", target);
+        this.prevDisplay = this.target?.style.display;
+    }
+
+    render(ctrl: Controller, dataOverride?: any): string | void {
+        const currValue = ctrl.resolve(this.expression, dataOverride);
+
+        if (currValue) {
+            // this.target.style.visibility = "block";
+            this.target.style.display = this.prevDisplay || "block";
+        } else {
+            // this.target.style.visibility = "none";
+            this.target.style.display = "none";
+        }
     }
 }

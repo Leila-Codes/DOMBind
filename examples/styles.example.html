@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bootstrap - Bind Style example</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+</head>
+<body bind-app="appData">
+<div class="container my-5">
+    <div class="card">
+        <div class="card-header" bind-style="{'background-color': bgColour, 'color': fgColour, 'font-size': fontWeight}">
+            Hello
+        </div>
+        <div class="card-body">
+            My body goes here...
+        </div>
+    </div>
+</div>
+</body>
+<script src="../dist/bundle.js"></script>
+<script type="text/javascript">
+    let appData = {
+        bgColour: '#0cf',
+        fgColour: '#dff',
+        fontWeight: '2em'
+    }
+</script>
+</html>

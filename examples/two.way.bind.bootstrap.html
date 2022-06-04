@@ -23,7 +23,7 @@
 </div>
 
 <div class="card">
-    <div class="card-header bg-primary">
+    <div class="card-header">
         Quick Form
     </div>
     <div class="card-body">
@@ -55,12 +55,19 @@
     </div>
 </div>
 
+    <button class="btn btn-secondary" bind-click="toggleVis(true)">Show</button>
+    <button class="btn btn-secondary" bind-click="toggleVis(false)">Hide</button>
+<div bind-if="visible" class="card card-body">
+    <h3>Hello
+        <span bind-str="formData.firstname"></span>, I am visible.</h3>
+</div>
+
 </div>
 
 </body>
 <script src="../dist/bundle.js"></script>
 <script type="text/javascript">
-    const appData = {
+    let appData = {
         name: "Test Control #1",
         formData: {
             firstname: '',
@@ -73,7 +80,16 @@
         ],
         clicked: (e, age, firstName, lastName) => {
             alert(`Hello there ${firstName} ${lastName}! You are ${age} year(s) old!`);
-        }
+        },
+        visible: false,
+        toggleVis: (newValue) => {
+            window.app.scope.visible = newValue;
+            // window.app.update('visible', !window.app.resolve('visible'));
+            // console.log("toggling visibility");
+            // this.visible = !this.visible;
+        },
     }
+
+
 </script>
 </html>

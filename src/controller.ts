@@ -1,63 +1,84 @@
 import {Level, Logger} from "./logging";
-import { DIRECTIVES } from "./directives/directives";
-import {Directive, /*DirectiveInstace, DirectiveInstance,*/ StrBindDirective} from "./directives/abstract.directives";
+import {DIRECTIVES, sanitizeExpression} from "./directives/directives";
+import {
+    Directive, /*DirectiveInstace, DirectiveInstance,*/
+    StrBindDirective,
+    VisibilityDirective
+} from "./directives/abstract.directives";
 import {ForLoopDirective} from "./directives/loop.directives";
 import {InputModelDirective} from "./directives/input.directives";
 import {ClickableDirective} from "./directives/event.directives";
+import {ClassDirective} from "./directives/class-directive";
+import {StyleDirective} from "./directives/style-directive";
 
-// export class Controller {
-//     name: string
-//     protected readonly data: any
-//
-//     constructor(name: string, data?: any) {
-//         this.name = name;
-//
-//         if (data != undefined)
-//             this.data = data;
-//     }
-//
-//     instantiate(): ControllerInstance {
-//         return new ControllerInstance(this.name, this.data);
-//     }
-// }
-
-export class NewController extends Directive {
+export class Controller extends Directive {
     // selector = "[bind-controller]"
 
-    private scope: Map<string, Object> = new Map();
+    // private scope: Map<string, Object> = new Map();
+    private scope: ProxyHandler<Map<string, Object>>;
     private logger: Logger
+    // @ts-ignore
     private bindings: Map<string, Directive[]> = new Map();
 
     constructor(data?: any) {
         super("[bind-controller]");
 
-        this.scope = data;
+        const ctrl = this;
+
+        this.scope = new Proxy(data, {
+            set(target: any, p: string | symbol, value: any, receiver: any): boolean {
+                target[p] = value;
+
+                ctrl.postUpdate(p as string);
+
+                return true;
+            },
+            get(target: any, p: string | symbol, receiver: any): any {
+                return target[p];
+            }
+        });
 
         this.logger = new Logger(`Bindy-Controller`, Level.VERBOSE);
     }
 
-    get(expression: string, target: any = this.scope): any {
-        try {
-            if (expression) {
-                return eval(`target.${expression}`);
+    resolve(expression: string, target: any = this.scope): any {
+
+        let invert = false;
+
+        if (expression.startsWith("!")) {
+            expression = expression.replace("!", "");
+            invert = true;
+        }
+
+        // const ctrlValue = eval(`target.${expression}`);
+
+        const parts = expression.split("."),
+            isLast = parts.length === 1;
+
+        if (target[parts[0]] !== undefined) {
+            if (isLast) {
+                return invert ? !target[parts[0]] : target[parts[0]];
             }
-        } catch (ex) {
-            try {
-                return eval(expression);
-            } catch {
-                this.logger.log(Level.ERROR, "failed to fetch property", expression, "from", target);
+            return this.resolve(parts.slice(1).join("."), target[parts[0]]);
+        } else { // @ts-ignore
+            if ( window[parts[0]]) {
+                if (isLast) {
+                    // @ts-ignore
+                    return window[parts[0]];
+                }
+                return this.resolve(parts.slice(1).join("."), window)
+            } else {
+                try {
+                    const rawVal = JSON.parse(`{"value": ${expression}}`);
+                    return invert ? !rawVal.value : rawVal.value;
+                } catch (ex) {
+                    this.logger.log(Level.WARNING, "failed to fetch property", expression, "from", target);
+                }
             }
         }
-        return target;
     }
 
-    compile(target: HTMLElement, ctrlOverride: NewController = this) {
-        // super.compile(ctrl, target);
-        // try {
-        //     this.scope = eval(this.expression);
-        // } catch (ex) {
-        //     this.scope = new Map();
-        // }
+    compile(target: HTMLElement, ctrlOverride: Controller = this) {
 
         DIRECTIVES.forEach((d: Directive) => {
             const els = target.querySelectorAll(d.selector);
@@ -72,37 +93,49 @@ export class NewController extends Directive {
                         instance = new ClickableDirective(e as HTMLElement);
                     } else if (d instanceof InputModelDirective) {
                         instance = new InputModelDirective(e as HTMLInputElement);
+                    } else if (d instanceof VisibilityDirective) {
+                        instance = new VisibilityDirective(e as HTMLElement);
+                    } else if (d instanceof ClassDirective) {
+                        instance = new ClassDirective(e as HTMLElement);
+                    } else if (d instanceof StyleDirective) {
+                        instance = new StyleDirective(e as HTMLElement);
                     } else {
                         throw "Unrecognised directive " + e;
                     }
 
-                    const expressionBinding = instance.render(ctrlOverride);
-                    if (expressionBinding) {
+                    // const expressionBinding = instance.render(ctrlOverride);
+                    // if (expressionBinding) {
 
-                        if (!this.bindings.has(expressionBinding))
-                            this.bindings.set(expressionBinding, []);
+                        // if (!this.bindings.has(instance.expression))
+                        //     this.bindings.set(instance.expression, []);
 
-                        this.bindings.get(expressionBinding)?.push(instance);
+                        // this.bindings.get(instance.expression)?.push(instance);
 
+                    // }
+
+                    for (let binding of instance.bindings()) {
+                        binding = sanitizeExpression(binding);
+
+                        if (!this.bindings.has(binding))
+                            this.bindings.set(binding, []);
+
+                        this.bindings.get(binding)?.push(instance);
                     }
                 }
             })
         })
+
+        this.render();
     }
 
-    update(expression: string, value: any, target: any = this.scope ): boolean {
+    update(expression: string, value: any, target: any = this.scope): boolean {
 
         try {
             eval(`target.${expression} = value`);
 
             this.logger.log(Level.VERBOSE, "updated property", expression, "set to", value);
 
-            if (this.bindings.has(expression)) {
-                this.bindings.get(expression)?.forEach((e) => {
-                    // this.render(<HTMLElement>e.parentNode);
-                    e.render(this);
-                })
-            }
+            this.postUpdate(expression);
 
             return true;
         } catch (ex) {
@@ -112,124 +145,22 @@ export class NewController extends Directive {
         return false;
     }
 
-    render(ctrl: NewController = this, dataOverride?: any): string | void {
+    postUpdate(expression: string) {
+        this.logger.log(Level.VERBOSE, "triggering post updates for property", expression);
 
-    }
-
-}
-/*
-
-export class ControllerInstance extends Controller {
-    scope: any
-
-    private target: HTMLElement | undefined
-    private logger: Logger
-
-    private bindings: Map<string, Set<HTMLElement>> = new Map();
-
-    constructor(name: string, data?: any) {
-        super(name, data);
-
-        let ctrl = this;
-
-        this.logger = new Logger(`Bindy-Controller-${this.name}`, Level.VERBOSE);
-
-        if (name)
-            this.name = name
-
-
-        this.scope = data || {};
-    }
-
-    get(expression: string, target?: string): any {
-        if (!target)
-            target = this.data;
-
-        try {
-            if (expression)
-                return eval(`target.${expression}`);
-            else
-                return target;
-        } catch (ex) {
-            this.logger.log(Level.ERROR, "failed to fetch property", expression, "from", target);
-        }
-
-    }
-
-    update(expression: string, value: any, target?: any): boolean {
-
-        if (!target)
-            target = this.data
-
-        try {
-            eval(`target.${expression} = value`);
-
-            this.logger.log(Level.VERBOSE, "updated property", expression, "set to", value);
-
-            if (this.bindings.has(expression)) {
-                this.bindings.get(expression)?.forEach((e) => {
-                    this.render(<HTMLElement>e.parentNode);
-                })
-            }
-
-            return true;
-        } catch (ex) {
-            this.logger.log(Level.ERROR, "failed to update property", expression);
-
-            return false;
+        if (this.bindings.has(expression)) {
+            this.bindings.get(expression)?.forEach((e) => {
+                e.render(this);
+            })
         }
     }
 
-    bind(target: HTMLElement) {
-        this.target = target;
-
-        this.render();
-    }
-
-    render(target?: HTMLElement, dataOverride?: any) {
-        const ctrl = this;
-
-        if (!target)
-            target = this.target;
-
-        DIRECTIVES.forEach((d) => {
-            const els = target?.querySelectorAll(d.selector);
-
-            this.logger.log(Level.VERBOSE, "processing directive", d.selector, "on", els);
-
-            if (els)
-                els.forEach((e) => {
-
-                    const expression = d.render(ctrl, <HTMLElement>e, dataOverride);
-
-                    if (expression) {
-                        if (!this.bindings.has(expression))
-                            this.bindings.set(expression, new Set<HTMLElement>());
-
-                        // @ts-ignore
-                        this.bindings.get(expression).add(<HTMLElement>e);
-                    }
-                });
+    render(ctrl: Controller = this, dataOverride?: any): string | void {
+        this.bindings.forEach((directives, expression) => {
+            directives.forEach((directive) => {
+                directive.render(ctrl, dataOverride);
+            })
         })
     }
 
-    private parseEl(template: string): HTMLElement {
-        const el = document.createElement('div');
-        el.innerHTML = template;
-        return el;
-    }
-
-    private evaluate(expression: string, data?: any): any {
-        const parts = expression.split(".");
-        let value: any = data || this.scope;
-        for (let part of parts) {
-            if (part === '')
-                continue;
-            value = value[part];
-
-        }
-
-        return value;
-    }
 }
-*/

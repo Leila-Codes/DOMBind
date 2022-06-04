@@ -1,16 +1,16 @@
-import {NewController} from "./controller";
+import {Controller} from "./controller";
 
 export class Expression {
     protected readonly expression: string
-    readonly ctrl: NewController
+    readonly ctrl: Controller
 
-    constructor(ctrl: NewController, expression: string) {
+    constructor(ctrl: Controller, expression: string) {
         this.expression = expression;
         this.ctrl = ctrl;
     }
 
     resolve(): any {
-        return this.ctrl.get(this.expression);
+        return this.ctrl.resolve(this.expression);
     }
 
     update(value: any): boolean {
@@ -37,7 +37,7 @@ export interface ExpressionEventMap {
 export class WatchedExpression extends EventTarget {
     readonly expression: Expression
 
-    constructor(ctrl: NewController, expression: string) {
+    constructor(ctrl: Controller, expression: string) {
         super();
         this.expression = new Expression(ctrl, expression);
     }

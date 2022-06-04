@@ -1,18 +1,5 @@
-import {NewController} from "./controller";
+import {Controller} from "./controller";
 import {Directive} from "./directives/abstract.directives";
-
-// export class Application {
-//     // selector = "[bind-app]"
-//     target: HTMLElement
-//     root: NewController
-//
-//     constructor(target: HTMLElement, data?: any) {
-//         this.target = target;
-//
-//         this.root = new NewController(data);
-//         this.root.compile(this.target);
-//     }
-// }
 
 export default function bootstrap() {
     const elem = document.querySelector("[bind-app]"),
@@ -29,11 +16,14 @@ export default function bootstrap() {
         } catch (ex) {
         }
 
-    const rootCtrl = new NewController(dataObj);
+    const rootCtrl = new Controller(dataObj);
+
+    eval(`${bindExpression} = rootCtrl.scope`);
+
     // @ts-ignore
     rootCtrl.compile(elem);
     (window as any).app = rootCtrl;
 
 }
-
-window.onload = bootstrap;
+// @ts-ignore
+window.addEventListener('load', bootstrap, true);

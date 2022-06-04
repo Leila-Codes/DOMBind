@@ -1,4 +1,4 @@
-import { NewController} from "../controller";
+import { Controller} from "../controller";
 import {Directive} from "./abstract.directives";
 
 export class ForLoopDirective extends Directive {
@@ -6,10 +6,10 @@ export class ForLoopDirective extends Directive {
         super("[bind-for]", target);
     }
 
-    render(ctrl: NewController, data?: any) {
+    render(ctrl: Controller, data?: any) {
         const output = document.createDocumentFragment();
 
-        const arr = ctrl.get(this.expression, data);
+        const arr = ctrl.resolve(this.expression, data);
         // const arr = evaluate(attr, data);
         if (Array.isArray(arr)) {
             this.target.appendChild(document.createComment(`for ${this.expression} in ${this.expression}`));
@@ -22,7 +22,7 @@ export class ForLoopDirective extends Directive {
                 // this.target.appendChild(itemEl);
                 output.append(itemEl);
 
-                const itemCtrl = new NewController(item);
+                const itemCtrl = new Controller(item);
                 itemCtrl.compile(itemEl as HTMLElement);
 
             });

@@ -97,3 +97,76 @@ Similar to `ng-model` this one is a bidirectional binding for input elements. An
     }
 </script>
 ```
+
+### Class binding
+Similar to `ng-class` allows for toggling of a list of classes based on whether the expression is true or false.
+
+```html
+<body bind-app="appData">
+    <div class="card">
+        <div class="card-header" bind-class="{'bg-primary': isBlue, 'bg-warning': !isBlue}">
+            Hello App v1
+        </div>
+        <div class="card-body">
+            Hello World!
+        </div>
+    </div>
+</body>
+
+<script src="dist/bundle.js"></script>
+<script type="text/javascript">
+    const appData = {
+        isBlue: true
+    }
+    
+    // Toggle the blue background every 3 seconds.
+    setInterval(() => {
+        window.app.scope.isBlue = !window.app.scope.isBlue;
+    }, 3000)
+</script>
+```
+
+### Visibility binding
+Similar to `ng-if` of `ng-show` toggles the `display` property on the element between `none` and it's previous value depending on whether the expression evaluates to true or false.
+
+```html
+<body bind-app="appData">
+    <div class="card" bind-if="shouldShow">
+        <div class="card-body">
+            I am now visible
+        </div>
+    </div>
+</body>
+
+<script src="dist/bundle.js"></script>
+<script type="text/javascript">
+    const appData = {
+        shouldShow: true
+    }
+    
+    // Toggle the panel visibility every 5 seconds.
+    setInterval(() => {
+        window.app.scope.shouldShow = !window.app.scope.shouldShow;
+    }, 5000)
+</script>
+```
+
+### (Experimental) Style bindings
+Similar to `ng-style` _should_ evaluate the expression's value and assign it to the property configured as the style.
+
+```html
+<body bind-app="appData">
+    <div class="card" bind-style="{'background-color': bgColour}">
+        <div class="card-body">
+            I am now visible
+        </div>
+    </div>
+</body>
+
+<script src="dist/bundle.js"></script>
+<script type="text/javascript">
+    const appData = {
+        bgColour: '#0cf'
+    }
+</script>
+```

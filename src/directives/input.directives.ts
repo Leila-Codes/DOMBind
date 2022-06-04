@@ -1,4 +1,4 @@
-import { NewController} from "../controller";
+import { Controller} from "../controller";
 import {Directive} from "./abstract.directives";
 
 export class InputModelDirective extends Directive {
@@ -11,7 +11,7 @@ export class InputModelDirective extends Directive {
             this.target = target;
     }
 
-    render(ctrl: NewController, dataOverride?: any) {
+    render(ctrl: Controller, dataOverride?: any) {
         // Configure the current value
         const attr = this.target.getAttribute(this.attr);
 
@@ -19,7 +19,7 @@ export class InputModelDirective extends Directive {
             // const currValue = evaluate(attr, data);
 
             // Assign current value
-            this.target.value = ctrl.get(attr, dataOverride);
+            this.target.value = ctrl.resolve(attr, dataOverride);
 
             // Set-up event handlers
             this.target.oninput = function (e) {
@@ -32,6 +32,8 @@ export class InputModelDirective extends Directive {
                 ctrl.update(attr, newValue, dataOverride);
             }
         }
+        return this.expression
+
 
     }
 }

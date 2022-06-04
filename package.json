@@ -1,6 +1,6 @@
 {
   "name": "dombindy",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A simple, lightweight web framework. Yes another framework. I'm tired of how bloated the popular ones are. Angular, React and Vue.",
   "directories": {
     "example": "examples"

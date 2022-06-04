@@ -1,4 +1,4 @@
-import { NewController} from "../controller";
+import { Controller} from "../controller";
 import {Directive} from "./abstract.directives";
 
 export class ClickableDirective extends Directive {
@@ -6,7 +6,7 @@ export class ClickableDirective extends Directive {
         super("[bind-click]", target);
     }
 
-    render(ctrl: NewController, dataOverride?: any) {
+    render(ctrl: Controller, dataOverride?: any) {
         if (this.expression) {
             const matches = Array.from(this.expression.matchAll(/[\w\.]+/g));
 
@@ -17,13 +17,13 @@ export class ClickableDirective extends Directive {
             if (funcName === "update")
                 cb = ctrl.update
             else
-                cb = ctrl.get(funcName, dataOverride);
+                cb = ctrl.resolve(funcName, dataOverride);
 
             if (typeof cb === "function") {
                 this.target.onclick = function(e) {
-                    const argVals = Array.from(args).map(a => ctrl.get(a, dataOverride));
+                    const argVals = args.map(a => ctrl.resolve(a, dataOverride));
 
-                    cb.apply(ctrl, [args[0], ...argVals]);
+                    cb.apply(ctrl, argVals);
                 }
             }
         }
